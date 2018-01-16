@@ -82,7 +82,7 @@
 			</canvas>
 			
 			<div>	
-				<ul id="cold_color">
+				<ul id="color">
 					<li></li>
 					<li></li>
 					<li></li>
@@ -159,27 +159,9 @@
 				{"0":"#773f30","1":"#af5644","2":"#ac5f41","3":"#626749","4":"#8a824f"}
 				],
 				"names":["冷红","暖红","冷浅","暖浅","冷艳","暖艳","冷深","暖深"]
-			}
-				
+			}			
 			
-			
-			var cold_colors = new Array();
-			cold_colors[0] = "#f4b3c2";
-			cold_colors[1] = "#ec6d71";
-			cold_colors[2] = "#e95295";
-			cold_colors[3] = "#cb3a56";
-			cold_colors[4] = "#f09199";
-			
-			
-			var warm_colors = new Array();
-			warm_colors[0] = "#ffb61e";
-			warm_colors[1] = "#f6ad49";
-			warm_colors[2] = "#f08300";
-			warm_colors[3] = "#9f563a";
-			warm_colors[4] = "#f9906f";
-			
-			
-			var ul = document.getElementById("cold_color");
+			var ul = document.getElementById("color");
 			var lis = ul.getElementsByTagName("li");
 			var lis_len = lis.length - 1;
 			for(var i = 0; i < lis_len; i++) {
@@ -199,7 +181,7 @@
 			function nextColors(){
 				counter = counter + 1;
 				counter = counter%8;
-				var ul = document.getElementById("cold_color");
+				var ul = document.getElementById("color");
 				var lis = ul.getElementsByTagName("li");
 				var lis_len = lis.length - 1;
 				for(var i = 0; i < lis_len; i++) {
