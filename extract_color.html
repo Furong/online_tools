@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>在线工具-提取图片RGB值</title>
+		<style type="text/css">
+			.file {
+			    position: relative;
+			    display: inline-block;
+			    background: #D0EEFF;
+			    border: 1px solid #99D3F5;
+			    border-radius: 4px;
+			    padding: 4px 12px;
+			    overflow: hidden;
+			    color: #1E88C7;
+			    text-decoration: none;
+			    text-indent: 0;
+			    line-height: 20px;
+			}
+			.file input {
+			    position: absolute;
+			    right: 0;
+			    top: 0;
+			    opacity: 0;
+			}
+			.file input:hover{
+				cursor: pointer;
+			}
+			.file:hover {
+			    background: #AADFFD;
+			    border-color: #78C3F3;
+			    color: #004974;
+			    text-decoration: none;
+			    cursor: pointer;
+			}	
+			#myCanvas{
+				border:1px solid #c3c3c3
+			}	
+			#color{
+				width: 30px;
+				height: 30px;
+				border: 1 solid black;
+				display: inline-block;
+			}	
+			
+		</style>
+	</head>
+	<body>
+		<div style="width: 50%;float: left;">
+			<div>
+				<a href="javascript:;" class="file">选择图片
+					<input type="file"  id="upload" onchange="selectImage(this);"/>
+				</a>
+			</div>
+			<canvas id="myCanvas" width="400" height="300" onclick="getRGB(event)">
+				Your browser does not support the canvas element.
+			</canvas>
+			<div>
+				<div id="color">
+				</div>
+				<span id='color_text'>
+					
+				</span>
+				<span id='color_rgb'>
+					
+				</span>
+			</div>
+		</div>
+		<div style="width: 50%;float: left;">
+			<div>
+				使用说明：
+				<br>
+				1. 点击选择图片按钮，从本地选取一张图片
+				<br>
+				2. 点击图片，即可获得点击位置的像素的rgb值
+			</div>
+		</div>
+		<script>
+			var image = '';
+	 		var photoW = 400;  
+       		var photoH = 300; 
+       		var imgData;
+			function selectImage(file){
+				if(!file.files || !file.files[0]){
+					return;
+				}
+				var windowURL = window.URL || window.webkitURL; 
+				var picURL = windowURL.createObjectURL(file.files[0]); 
+				var photoCanvas = document.getElementById("myCanvas");  
+				var ctx = photoCanvas.getContext("2d");  
+				
+				photo = new Image();  
+				photo.onload = function() {  
+                    //draw photo into canvas when ready  
+                    ctx.drawImage(photo, 0, 0, photoW, photoH);  
+                    imgData=ctx.getImageData(0,0,photoW, photoH);  
+                }; 
+                photo.src = picURL;  
+                var arr = picURL.split('/');  
+                var imgUrl = arr[arr.length - 1];  
+                windowURL.revokeObjectURL(imgUrl);  
+			}
+			
+			function getRGB(event){
+				var canvas = document.getElementById("myCanvas");
+				var x = event.clientX - canvas.getBoundingClientRect().left; 
+				var y = event.clientY - canvas.getBoundingClientRect().top;
+				x = parseInt(x);
+				y = parseInt(y);
+				
+				var ctx = canvas.getContext("2d");
+				var imagedates=ctx.getImageData(x,y,1,1);  
+         		var pixel=imagedates.data;  
+        		document.getElementById("color").style["background-color"]="rgb("+pixel[0]+","+pixel[1]+","+pixel[2]+")";
+				
+				console.log(x+","+y);
+				
+				document.getElementById("color_text").innerHTML = colorRGB2Hex(pixel);
+				document.getElementById("color_rgb").innerHTML = "rgb("+pixel[0]+","+pixel[1]+","+pixel[2]+")";
+				
+				
+			}
+			
+			function colorRGB2Hex(color) {
+			    
+			    var r = color[0];
+			    var g = color[1];
+			    var b = color[2];
+			 
+			    var hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+			    return hex;
+			}
+		 
+		</script>
+	</body>
+</html>
