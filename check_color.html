@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>色彩诊断</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<style type="text/css">
+			ul{
+				padding: 0;
+			}
+			li{
+				display: block;
+				width: 50px;
+				height: 100px;				
+				float:left
+			}
+			
+			.file {
+			    position: relative;
+			    display: inline-block;
+			    background: #D0EEFF;
+			    border: 1px solid #99D3F5;
+			    border-radius: 4px;
+			    padding: 4px 12px;
+			    overflow: hidden;
+			    color: #1E88C7;
+			    text-decoration: none;
+			    text-indent: 0;
+			    line-height: 20px;
+			}
+			.file input {
+			    position: absolute;
+			    font-size: 100px;
+			    right: 0;
+			    top: 0;
+			    opacity: 0;
+			}
+			.file:hover {
+			    background: #AADFFD;
+			    border-color: #78C3F3;
+			    color: #004974;
+			    text-decoration: none;
+			}
+			.btn{
+				width: 50px;
+				height: 30px;
+				font-size: 10px;
+				display: block; 
+				position: relative; 
+				background: #D0EEFF;
+				color: #1E88C7;
+			    border: 1px solid #99D3F5;
+				float: left;
+				text-decoration: none;
+				cursor: pointer;
+				border-radius: 5px;
+			}
+			#myCanvas{
+				border:1px solid #c3c3c3;
+			}
+			#color_card{
+				font-size: 15px;
+				background: #D0EEFF;
+				color:#1E88C7 ;
+				width: 30px;
+				border: 1px solid #99D3F5;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<div style="width: 30%; float: left;">
+			<div>
+				<a href="javascript:;" class="file">选择文件
+					<input type="file"  id="test1" onchange="selectImage(this);"/>
+				</a>
+			</div> 
+		
+			<canvas id="myCanvas" onclick="getRGB(event)">
+				Your browser does not support the canvas element.
+			</canvas>
+			
+			<div>	
+				<ul id="cold_color">
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li>
+						<input type="button" value="下一组" class="btn blue" id="next" onclick="nextColors()"/>		
+					</li>
+				</ul>				
+			</div>
+		</div>
+		<div style="width: 30%; float: left;">
+			使用方法：
+			<br>
+			1.上传一张面部照片
+			<br>
+			2.依次点击色卡，比较哪种颜色和面部更搭配
+		</div>
+		
+		<script type="text/javascript">
+	 		var image = '';
+	 		var counter = 0;
+	 		
+	 		var winW = window.innerWidth;
+	 		var winH = window.innerHeight;
+	 		
+	 		var photoW;
+       		var photoH;
+       		
+       		photoW = winW > 300? 300 : winW; 
+       		photoH = winH > 300? 300 : winH;  
+       		photoCanvas = document.getElementById("myCanvas");  
+			photoCanvas.setAttribute("width",photoW);
+			photoCanvas.setAttribute("height",photoH);
+       		      		
+       		
+       		var imgData;
+       		var photoCanvas;
+       		var ctx ;
+			function selectImage(file){
+				if(!file.files || !file.files[0]){
+					return;
+				}
+				var windowURL = window.URL || window.webkitURL; 
+				var picURL = windowURL.createObjectURL(file.files[0]); 
+				photoCanvas = document.getElementById("myCanvas");  
+				ctx = photoCanvas.getContext("2d");  
+				
+				photo = new Image();  
+				photo.onload = function() {  
+                    //draw photo into canvas when ready  
+                    ctx.drawImage(photo, 0, 0, photoW, photoH);
+                                      
+                    imgData=ctx.getImageData(0,0,photoW, photoH);
+                    
+									
+                }; 
+                photo.src = picURL;  
+                var arr = picURL.split('/');  
+                var imgUrl = arr[arr.length - 1];  
+                windowURL.revokeObjectURL(imgUrl);  
+			}
+			
+			var colors = {
+				"types":8,
+				"rgbs":[
+				{"0":"#f4b3c2","1":"#ec6d71","2":"#e95295","3":"#cb3a56","4":"#f09199"},
+				{"0":"#ffb61e","1":"#f6ad49","2":"#f08300","3":"#9f563a","4":"#f9906f"},
+				{"0":"#a4e2c6","1":"#bce2e8","2":"#4c8dae","3":"#dcd6d9","4":"#e5abbe"},				
+				{"0":"#ccff99","1":"#ffff66","2":"#f0c239","3":"#ffa400","4":"#f8b862"},
+				{"0":"#595fa9","1":"#593d7a","2":"#386fa8","3":"#7e4b8a","4":"#9c4275"},
+				{"0":"#fff33","1":"#c96542","2":"#eb7c69","3":"#8fb258","4":"#6f8e53"},
+				{"0":"#526257","1":"#6b4578","2":"#664e64","3":"#634688","4":"#9259f"},
+				{"0":"#773f30","1":"#af5644","2":"#ac5f41","3":"#626749","4":"#8a824f"}
+				],
+				"names":["冷红","暖红","冷浅","暖浅","冷艳","暖艳","冷深","暖深"]
+			}
+				
+			
+			
+			var cold_colors = new Array();
+			cold_colors[0] = "#f4b3c2";
+			cold_colors[1] = "#ec6d71";
+			cold_colors[2] = "#e95295";
+			cold_colors[3] = "#cb3a56";
+			cold_colors[4] = "#f09199";
+			
+			
+			var warm_colors = new Array();
+			warm_colors[0] = "#ffb61e";
+			warm_colors[1] = "#f6ad49";
+			warm_colors[2] = "#f08300";
+			warm_colors[3] = "#9f563a";
+			warm_colors[4] = "#f9906f";
+			
+			
+			var ul = document.getElementById("cold_color");
+			var lis = ul.getElementsByTagName("li");
+			var lis_len = lis.length - 1;
+			for(var i = 0; i < lis_len; i++) {
+				var li = lis[i];
+				//lis[i].style.background = cold_colors[i];
+				var cc = colors["rgbs"];
+				var ccc = cc[counter];
+				lis[i].style.background = ccc[i];
+				lis[i].onclick = function(){
+					console.log(this.style["background"]);
+					ctx.fillStyle=this.style["background"];
+					ctx.fillRect(0,photoH-(photoH/3), photoW,parseInt(photoH/3));
+					
+				}
+			}
+			
+			function nextColors(){
+				counter = counter + 1;
+				counter = counter%8;
+				var ul = document.getElementById("cold_color");
+				var lis = ul.getElementsByTagName("li");
+				var lis_len = lis.length - 1;
+				for(var i = 0; i < lis_len; i++) {
+					var li = lis[i];
+					//lis[i].style.background = cold_colors[i];
+					var cc = colors["rgbs"];
+					var ccc = cc[counter];
+					lis[i].style.background = ccc[i];
+					lis[i].onclick = function(){
+						console.log(this.style["background"]);
+						ctx.fillStyle=this.style["background"];
+						ctx.fillRect(0,photoH-(photoH/3), photoW,parseInt(photoH/3));
+						
+					}
+				}
+				
+			}
+		</script>
+		
+	
+	</body>
+</html>
+
